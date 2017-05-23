@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ItemSet.h"
-
+#include <random>
+using namespace SDZ;
 
 ItemSet::ItemSet()
 {
@@ -18,7 +19,7 @@ ItemSet::ItemSet(uint item_num, uint max_item_value, uint max_item_weight)
 	item_set_.reserve(item_num);
 
 	std::random_device rd;
-	std::mt19937 rng(rd);
+	std::mt19937 rng(rd());
 	std::uniform_int_distribution<uint> random_weight(0, max_item_weight);
 	std::uniform_int_distribution<uint> random_value(0, max_item_value);
 
@@ -63,7 +64,7 @@ void ItemSet::AddItem(uint weight, uint value)
 	Item item = Item(weight, value);
 	item_set_.push_back(item);
 	total_value_ += value;
-	total_weight_ += 
+	total_weight_ += weight;
 }
 
 void ItemSet::FillRandom(uint item_num, uint max_item_value, uint max_item_weight)
@@ -72,7 +73,7 @@ void ItemSet::FillRandom(uint item_num, uint max_item_value, uint max_item_weigh
 	item_set_.reserve(item_num);
 
 	std::random_device rd;
-	std::mt19937 rng(rd);
+	std::mt19937 rng(rd());
 	std::uniform_int_distribution<uint> random_weight(0, max_item_weight);
 	std::uniform_int_distribution<uint> random_value(0, max_item_value);
 
