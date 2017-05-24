@@ -1,6 +1,9 @@
 #pragma once
 
 #include <random>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
 #include "Vector.h"
 
 
@@ -13,33 +16,45 @@ namespace SDZ {
 	{
 	public:
 
+		//Types	
+
 		uint weight_;
 		uint value_;
 		double value_per_weight_;
 
+		// Constructors
 		Item()
-			: weight_(0)
-			, value_(0)
-			, value_per_weight_(0)
-		{	}
+			: weight_(1)
+			, value_(1)
+			, value_per_weight_(1)
+		{}
 		Item(uint weight, uint value)
 			: weight_(weight)
 			, value_(value)
-			, value_per_weight_(value / weight)
+			, value_per_weight_(double(value) / double(weight))
 		{}
 		Item(const Item &item)
 			: weight_(item.weight_)
 			, value_(item.value_)
 			, value_per_weight_(item.value_per_weight_)
 		{}
+
+		// Adding to set
 		void AddValue(uint value)
 		{
 			value_ += value;
-			value_per_weight_ = value_ / weight_;
+			value_per_weight_ = double(value_) / double(weight_);
 		}
-		bool operator > (const Item &val) const
+
+		// Comparision
+		
+		bool operator < (const Item &val) const
 		{
 			return value_per_weight_ > val.value_per_weight_;
+		}
+		bool operator > (const Item &val) 
+		{
+			return value_per_weight_ < val.value_per_weight_;
 		}
 	};
 
@@ -48,19 +63,39 @@ namespace SDZ {
 	{
 	public:
 
-		//Constructors
+		//Types
+		typedef Item *										iterator;
+		typedef const Item *								const_iterator;
+		typedef std::reverse_iterator<iterator>				reverse_iterator;
+		typedef std::reverse_iterator<const_iterator>		const_reverse_iterator;
+
+		// Constructors
 
 		ItemSet();
 		ItemSet(const ItemSet &set);
 		ItemSet(uint item_num, uint max_item_value = 10, uint max_item_weight = 10);
 		~ItemSet();
 
-		//Operators
+		// Iterators
+
+		iterator begin() noexcept;
+		iterator end() noexcept;
+		const_iterator cbegin() const noexcept;	
+		const_iterator cend() const noexcept;
+
+		// Reverse Iterators
+
+		reverse_iterator rbegin() noexcept;
+		reverse_iterator rend() noexcept;
+		const_reverse_iterator crbegin() const noexcept;
+		const_reverse_iterator crend() const noexcept;
+
+		// Operators
 
 		ItemSet & operator = (const ItemSet& set);
 		ItemSet & operator = (ItemSet && set);
 
-		//Adding
+		// Adding
 
 		void AddItem(Item &item);
 		void AddItem(uint weight, uint value);
@@ -68,11 +103,55 @@ namespace SDZ {
 		void FillRandom(uint item_num, uint max_item_value = 10, uint max_item_weight = 10);
 		void IncreaseTotalValue(uint min_value);
 
+		// Getters
+
+		uint GetSize() { return item_set_.size(); }		
+		uint GetTotalWeight() { return total_weight_; }
+		uint GetTotalValue() { return total_value_; }
+
+		// DisplaySet
+
+		void DisplaySet();
+		void DisplayInfo();
+		void Sort();
+
+		
+
 	private:
 
 		DTS::Vector<Item> item_set_;
 		uint total_value_ = 0;
 		uint total_weight_ = 0;
+
+		//Sorting
+
+		void QuickSort(uint p, uint r);
+		uint Partirion(uint p, uint r)
+		{
+			Item x = item_set_.at(p);
+
+			Item w;
+
+			uint i = p, j = r;
+
+			while (true)
+			{
+				while (item_set_.at(j) > x)
+					j--;
+				while (item_set_.at(i) < x)
+					i++;
+				if (i < j)
+				{
+					w = item_set_.at(i);
+					item_set_.at(i) = item_set_.at(j);
+					item_set_.at(j) = w;
+					i++;
+					j--;
+				}
+				else
+					return j;
+			}
+		}
 	};
 }
 
