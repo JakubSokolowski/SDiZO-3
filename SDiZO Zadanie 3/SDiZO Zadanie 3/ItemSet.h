@@ -111,6 +111,7 @@ namespace SDZ {
 		uint GetTotalWeight() { return total_weight_; }
 		uint GetTotalValue() { return total_value_; }
 
+		Item At(uint index);
 		// Display
 
 		void DisplaySet();

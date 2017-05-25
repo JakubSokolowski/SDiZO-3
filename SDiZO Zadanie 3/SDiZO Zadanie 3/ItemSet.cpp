@@ -151,14 +151,19 @@ void ItemSet::IncreaseTotalValue(uint min_value)
 	}
 }
 
+Item SDZ::ItemSet::At(uint index)
+{
+	return item_set_.at(index);
+}
+
 void SDZ::ItemSet::DisplaySet()
 {
 	std::cout.precision(3);
 	for (auto item : item_set_)
 	{
 		std::cout << std::fixed 
-		<< "Val: " << item.value_ << "\tWeight: " << item.weight_ 
-		<< "\t" << item.value_per_weight_ << std::endl;
+		<< "Val: " << item.value_ << "  \tWeight: " << item.weight_ 
+		<< "     \t" << item.value_per_weight_ << std::endl;
 	}	
 }
 
@@ -242,6 +247,7 @@ inline uint SDZ::ItemSet::Partirion(uint p, uint r)
 			i++;
 		if (i < j)
 		{
+			//Swap the elements
 			w = item_set_.at(i);
 			item_set_.at(i) = item_set_.at(j);
 			item_set_.at(j) = w;
