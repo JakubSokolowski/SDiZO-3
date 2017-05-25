@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <iostream>
 #include <iterator>
+#include <fstream>
 #include "Vector.h"
 
 
@@ -99,6 +100,7 @@ namespace SDZ {
 
 		void AddItem(Item &item);
 		void AddItem(uint weight, uint value);
+		void AddToValue(uint index, uint value);
 
 		void FillRandom(uint item_num, uint max_item_value = 10, uint max_item_weight = 10);
 		void IncreaseTotalValue(uint min_value);
@@ -109,11 +111,18 @@ namespace SDZ {
 		uint GetTotalWeight() { return total_weight_; }
 		uint GetTotalValue() { return total_value_; }
 
-		// DisplaySet
+		// Display
 
 		void DisplaySet();
 		void DisplayInfo();
+
+		// Discrete Knapsack Problem
 		void Sort();
+
+		// File input and output
+
+		void WriteToFile(uint knapsack_capacity,std::string filepath);
+		void ReadFromFile(std::string filepath);
 
 		
 
@@ -126,32 +135,7 @@ namespace SDZ {
 		//Sorting
 
 		void QuickSort(uint p, uint r);
-		uint Partirion(uint p, uint r)
-		{
-			Item x = item_set_.at(p);
-
-			Item w;
-
-			uint i = p, j = r;
-
-			while (true)
-			{
-				while (item_set_.at(j) > x)
-					j--;
-				while (item_set_.at(i) < x)
-					i++;
-				if (i < j)
-				{
-					w = item_set_.at(i);
-					item_set_.at(i) = item_set_.at(j);
-					item_set_.at(j) = w;
-					i++;
-					j--;
-				}
-				else
-					return j;
-			}
-		}
+		uint Partirion(uint p, uint r);
 	};
 }
 

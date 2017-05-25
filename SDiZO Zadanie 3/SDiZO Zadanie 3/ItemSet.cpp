@@ -108,6 +108,12 @@ void ItemSet::AddItem(uint weight, uint value)
 	total_weight_ += weight;
 }
 
+void SDZ::ItemSet::AddToValue(uint index, uint value)
+{
+	item_set_.at(index).AddValue(value);
+	total_value_ += value;
+}
+
 void ItemSet::FillRandom(uint item_num, uint max_item_value, uint max_item_weight)
 {
 	item_set_.clear();
@@ -134,15 +140,14 @@ void ItemSet::IncreaseTotalValue(uint min_value)
 		return;
 
 	uint missing_value = min_value - total_value_;
-
 	//Evenly distribute the missing_value in item_set
-	uint value = static_cast<uint>(missing_value / item_set_.size());
+	uint value = static_cast<uint>(missing_value / item_set_.size()) + 1;
 
-	for (auto item : item_set_)
+	for (uint i = 0; i < GetSize(); i++)
 	{
-		if (total_value_ > missing_value)
+		if (total_value_ > min_value)
 			break;
-		item.AddValue(value);
+		AddToValue(i, value);			
 	}
 }
 
@@ -168,6 +173,48 @@ void SDZ::ItemSet::Sort()
 	QuickSort(0, GetSize() - 1);
 }
 
+void SDZ::ItemSet::WriteToFile(uint knapsack_capacity,std::string filepath)
+{
+	if (knapsack_capacity > total_weight_)
+		IncreaseTotalValue(static_cast<uint>(knapsack_capacity*1.3));
+
+	std::ofstream file(filepath);
+
+	//Write the capacity and number of items
+	file << knapsack_capacity <<" "<< GetSize() << "\n";
+
+	//Write all the items
+	for (auto item : item_set_)
+	{
+		file << item.weight_ << " " << item.value_ << "\n";
+	}
+
+}
+
+void SDZ::ItemSet::ReadFromFile(std::string filepath)
+{
+	std::fstream file;
+	file.open(filepath, std::ios_base::in);
+
+	if (!file)
+		throw std::runtime_error("Could not open the file");
+
+	//Clear the item set
+	item_set_.clear();
+
+	uint num_items, capacity;
+	file >> capacity >> num_items;
+	
+	item_set_.reserve(num_items);
+
+	uint weight, value;
+
+	while (file >> weight >> value)	
+		AddItem(weight, value);	
+
+	file.close();
+}
+
 void SDZ::ItemSet::QuickSort(uint p, uint r)
 {
 	int q;
@@ -176,5 +223,32 @@ void SDZ::ItemSet::QuickSort(uint p, uint r)
 		q = Partirion(p, r);
 		QuickSort(p, q);
 		QuickSort(q + 1, r);
+	}
+}
+
+inline uint SDZ::ItemSet::Partirion(uint p, uint r)
+{
+	Item x = item_set_.at(p);
+
+	Item w;
+
+	uint i = p, j = r;
+
+	while (true)
+	{
+		while (item_set_.at(j) > x)
+			j--;
+		while (item_set_.at(i) < x)
+			i++;
+		if (i < j)
+		{
+			w = item_set_.at(i);
+			item_set_.at(i) = item_set_.at(j);
+			item_set_.at(j) = w;
+			i++;
+			j--;
+		}
+		else
+			return j;
 	}
 }
