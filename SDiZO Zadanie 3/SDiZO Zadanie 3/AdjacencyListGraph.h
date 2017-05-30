@@ -51,7 +51,7 @@ namespace SDZ
 
 		
 
-		// Display 
+		// Display
 
 		void DisplayEdges();
 		void DisplayEdgesWithWeights();

@@ -1078,7 +1078,7 @@ uint SDZ::AdjacencyListGraph::FindVertex(uint x, uint y)
 	return NULL;
 }
 
-//Marks the vertex on map as path. Used in Display 
+//Marks the vertex on map as path. Used in Display
 void SDZ::AdjacencyListGraph::MarkAsPathVertex(uint vertex_id)
 {
 	map_[adj_tab_[vertex_id].x_][adj_tab_[vertex_id].y_] = 2;
