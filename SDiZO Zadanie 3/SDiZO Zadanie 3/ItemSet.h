@@ -8,11 +8,11 @@
 #include "Vector.h"
 
 
-
-typedef unsigned int uint;
-
 namespace SDZ {
-	//Struct representing items in knapsack
+
+	using uint = unsigned int;
+
+	//Struct representing items in knapsack	
 	class Item
 	{
 	public:
