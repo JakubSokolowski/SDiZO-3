@@ -14,11 +14,6 @@ KnapSack::KnapSack()
 SDZ::KnapSack::KnapSack(uint capacity)
 {
 	capacity_ = capacity;
-	/*cost_table_ = new uint*[capacity];
-	for (uint i = 0; i < capacity; i++)
-	{
-		cost_table_[i] = new uint[capacity_];
-	}*/
 }
 
 
@@ -29,7 +24,6 @@ KnapSack::KnapSack(std::string filepath)
 
 	if (!file)
 		throw std::runtime_error("Could not open the file");
-
 }
 
 
@@ -51,30 +45,33 @@ void SDZ::KnapSack::Sort()
 	item_set_.Sort();
 }
 
-
-void SDZ::KnapSack::FillKnapsack(ItemSet & set, Heuristic h)
+// Fills the knapsack with items from set using Algorithm
+void SDZ::KnapSack::FillKnapsack(ItemSet & set, Algorithm alg)
 {
 	//Empty the knapsack
 	item_set_ = ItemSet();
 
-	//Vector that shows which elements are included
-	DTS::Vector<bool> included(set.GetSize(), false);
+	// Bruteforce and dynamic algorithm need a bool array that shows
+	// which items were included
+	DTS::Vector<bool> included;
 
-	switch (h)
+	switch (alg)
 	{
 		case BRUTEFORCE:
 		{
-			max_value_ = FillBruteForce(set, included, set.GetSize()-1, capacity_);
+			included.assign(set.GetSize(), false);
+			max_value_ = FillBruteForce(set, included);
 		}break;
 		
 		case GREEDY:
 		{
-			max_value_ = FillGreedy(set, set.GetSize()-1, capacity_);
+			max_value_ = FillGreedy(set);
 		}break;
 		
 		case DYNAMIC:
 		{
-			max_value_ = FillDynamic(set, included, set.GetSize()-1, capacity_);			
+			included.assign(set.GetSize(), false);
+			max_value_ = FillDynamic(set, included);			
 		}break;
 	}
 
@@ -87,48 +84,63 @@ void SDZ::KnapSack::FillKnapsack(ItemSet & set, Heuristic h)
 }
 
 
-uint SDZ::KnapSack::FillBruteForce(ItemSet & set, DTS::Vector<bool> & included, uint item_count, uint capacity)
+uint SDZ::KnapSack::FillBruteForce(ItemSet & set, DTS::Vector<bool> & included)
 {
-	//Base case
-	if (item_count == 0 || capacity == 0)	
+	uint item_count = set.GetSize();
+	uint capacity = capacity_;
+	return FillRecursive(set, included, item_count, capacity);
+}
+
+uint SDZ::KnapSack::FillRecursive(ItemSet & set, DTS::Vector<bool>& included, uint item_count, uint capacity)
+{
+	// Base case
+	if (item_count == 0 || capacity <= 0)
 		return 0;
 
+	// Extract the item, for easier comparision
 	Item item = set.At(item_count - 1);
-	//If the weight of the item is more than capacity, the item cannot be included in optimal solution
+
+	// If the weight of the item is more than total_weight, the item cannot be included in optimal solution
 	if (item.weight_ > capacity)
 	{
 		included.at(item_count - 1) = false;
-		return FillBruteForce(set, included, item_count-1, capacity);	
+		return FillRecursive(set, included, item_count - 1, capacity);
 	}
-		
 	else
 	{
-		uint total_with_item = FillBruteForce(set, included, item_count - 1, capacity - item.weight_) + item.value_;
-		DTS::Vector<bool> arr_with = included;
-		uint total_without_item = FillBruteForce(set, included, item_count - 1, capacity);
+		uint total_with_item = FillRecursive(set, included, item_count - 1, capacity - item.weight_) + item.value_;
+		// Included needs to be copied, so that the changes made by FillRecursive are recorded
+		DTS::Vector<bool> included_copy = included;
+		uint total_without_item = FillRecursive(set, included, item_count - 1, capacity);
 
-		
+		// If the total value is bigger with item
 		if (total_with_item > total_without_item)
 		{
-			included = arr_with;
-			included.at(item_count-1) = true;
+			// Include the item
+			included = included_copy;
+			included.at(item_count - 1) = true;
 			return total_with_item;
 		}
 		else
 		{
+			// Exclude the item
 			included.at(item_count - 1) = false;
 			return total_without_item;
 		}
 	}
 }
 
-uint SDZ::KnapSack::FillDynamic(ItemSet & set, DTS::Vector<bool>& included, uint item_count, uint capacity)
+uint SDZ::KnapSack::FillDynamic(ItemSet & set, DTS::Vector<bool>& included)
 {
-	DTS::Vector<DTS::Vector<uint>> cost_vector(item_count + 1, DTS::Vector<uint>(capacity + 1));
+	uint total_weight = capacity_;
+	uint item_count = set.GetSize();
 
+	DTS::Vector<DTS::Vector<uint>> cost_vector(item_count + 1, DTS::Vector<uint>(total_weight + 1, 0));
+
+	
 	for (uint i = 0; i <= item_count; ++i)
 	{
-		for (uint w = 0; w <= capacity; ++w)
+		for (uint w = 0; w <= total_weight; ++w)
 		{			
 			if (i == 0 || w == 0)
 				cost_vector[i][w] = 0;
@@ -143,33 +155,39 @@ uint SDZ::KnapSack::FillDynamic(ItemSet & set, DTS::Vector<bool>& included, uint
 		}
 	}
 
-	PickItem(set, included, cost_vector, item_count, capacity);
+	PickItem(set, included, cost_vector, item_count, total_weight);
 
-	return cost_vector[item_count][capacity];
+	return cost_vector[item_count][total_weight];
 }
 
-void SDZ::KnapSack::PickItem(ItemSet &set, DTS::Vector<bool>& included, DTS::Vector<DTS::Vector<uint>> &vec, uint item_count, uint total_weight)
+void SDZ::KnapSack::PickItem(ItemSet &set, DTS::Vector<bool>& included, DTS::Vector<DTS::Vector<uint>> &vec, uint i, uint w)
 {
-	if (item_count <= 0 || total_weight <= 0) return;
+	
+	if (i <= 0 || w <= 0) 
+		return;
 		
-	int k = vec[item_count][total_weight];
-	if (k != vec[item_count - 1][total_weight])  
+	int k = vec[i][w];
+	// An item is selected, if the value in the vec directly above is not equal to current position in vec
+	if (k != vec[i - 1][w])  
 	{
-		// Add item to included
-		included.at(item_count) = true;
+		// Include the item
+		included.at(i-1) = true;
 		// Capacity Decreases
-		PickItem(set, included, vec, item_count - 1, total_weight - set.At(item_count).weight_);
+		PickItem(set, included, vec, i - 1, w - set.At(i-1).weight_);
 	}
-	else {
-		// Move on to next item; capacity no change
-		PickItem(set, included, vec, item_count - 1, total_weight);
+	else 
+	{
+		// Move on to next item; total_weight no change
+		PickItem(set, included, vec, i - 1, w);
 	}	
 }
 
-uint SDZ::KnapSack::FillGreedy(ItemSet & set, uint item_count, uint total_weight)
+uint SDZ::KnapSack::FillGreedy(ItemSet & set)
 {
 	// Sort the sot by the ratio of value to weight
 	set.Sort();
+	uint total_weight = capacity_;
+	uint item_count = set.GetSize();
 
 	// Keep adding the values with the best ratio to the knapsack
 	for (uint i = 0; i < item_count; i++)

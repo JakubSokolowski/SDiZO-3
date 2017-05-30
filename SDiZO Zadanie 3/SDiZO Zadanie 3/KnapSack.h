@@ -7,7 +7,8 @@ namespace SDZ {
 	class KnapSack
 	{
 	public:
-		enum Heuristic  { BRUTEFORCE = 1, GREEDY = 2, DYNAMIC = 3 };
+		enum Algorithm  { BRUTEFORCE = 1, GREEDY = 2, DYNAMIC = 3 };
+
 		//Constructors 
 
 		KnapSack();
@@ -18,13 +19,12 @@ namespace SDZ {
 
 		//Discrete KnapSack Problem
 
-		void FillKnapsack(ItemSet &set, Heuristic h);
+		void FillKnapsack(ItemSet &set, Algorithm alg);
 
 		//Display
 
 		void Display();
 		void Sort();
-
 
 	private:
 
@@ -32,12 +32,13 @@ namespace SDZ {
 		uint capacity_;
 		uint max_value_;
 
-		uint FillBruteForce(ItemSet &set, DTS::Vector<bool> &included, uint item_count, uint total_weight);
+		uint FillBruteForce(ItemSet &set, DTS::Vector<bool> &included);
+		uint FillRecursive(ItemSet &set, DTS::Vector<bool> &included, uint item_count, uint total_weight);
 
-		uint FillDynamic(ItemSet &set, DTS::Vector<bool> &included, uint item_count, uint total_weight);
+		uint FillDynamic(ItemSet &set, DTS::Vector<bool> &included);
 		void PickItem(ItemSet &set, DTS::Vector<bool> &included, DTS::Vector<DTS::Vector<uint>> &vec, uint item_count, uint total_weight);
 
-		uint FillGreedy(ItemSet &set, uint item_count, uint total_weight);
+		uint FillGreedy(ItemSet &set);
 	};
 }
 
