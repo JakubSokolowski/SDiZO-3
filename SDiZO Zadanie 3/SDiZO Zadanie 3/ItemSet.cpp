@@ -4,6 +4,8 @@
 using namespace SDZ;
 
 ItemSet::ItemSet()
+	: total_value_(0)
+	, total_weight_(0)
 {
 }
 
@@ -119,6 +121,8 @@ void SDZ::ItemSet::AddToValue(uint index, uint value)
 void ItemSet::FillRandom(uint item_num, uint max_item_value, uint max_item_weight)
 {
 	item_set_.clear();
+	total_value_ = 0;
+	total_weight_ = 0;
 	item_set_.reserve(item_num);
 
 	std::random_device rd;
