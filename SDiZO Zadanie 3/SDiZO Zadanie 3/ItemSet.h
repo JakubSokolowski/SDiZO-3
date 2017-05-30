@@ -74,8 +74,9 @@ namespace SDZ {
 
 		ItemSet();
 		ItemSet(const ItemSet &set);
-		ItemSet(uint item_num, uint max_item_value = 10, uint max_item_weight = 10);
+		ItemSet(uint item_num, uint max_item_value , uint max_item_weight );
 		~ItemSet();
+
 
 		// Iterators
 
@@ -110,14 +111,15 @@ namespace SDZ {
 		uint GetSize() { return item_set_.size(); }		
 		uint GetTotalWeight() { return total_weight_; }
 		uint GetTotalValue() { return total_value_; }
-
 		Item At(uint index);
+
 		// Display
 
 		void DisplaySet();
 		void DisplayInfo();
 
 		// Discrete Knapsack Problem
+
 		void Sort();
 
 		// File input and output
