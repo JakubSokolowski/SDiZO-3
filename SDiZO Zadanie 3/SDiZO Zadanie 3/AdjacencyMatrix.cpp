@@ -4,16 +4,15 @@
 using namespace SDZ;
 
 
-SDZ::AdjacencyMatrix::AdjacencyMatrix(uint num_vertices, bool is_directed)
+SDZ::AdjacencyMatrix::AdjacencyMatrix(uint num_vertices, GraphParam is_directed)
 	: num_vertices_{ num_vertices }
 	, is_directed_{ is_directed }
 	, num_edges_{0}
-	, matrix_{ num_vertices, DTS::Vector<uint>{ num_vertices,0 } }
+	, matrix_( num_vertices, DTS::Vector<uint>( num_vertices,0 ))
 {}
 
 AdjacencyMatrix::~AdjacencyMatrix()
-{
-}
+{}
 
 uint SDZ::AdjacencyMatrix::GetNumVertices() const
 {
@@ -40,5 +39,15 @@ void SDZ::AdjacencyMatrix::AddEdge(uint source, uint destination, uint weight)
 	{
 		matrix_[source][destination] = weight;
 		matrix_[destination][source] = weight;
+	}
+}
+
+void SDZ::AdjacencyMatrix::DisplayMatrix()
+{
+	for (auto row : matrix_)
+	{
+		for (auto edge : row)
+			std::cout << edge << " ";
+		std::cout << std::endl;
 	}
 }
