@@ -55,7 +55,7 @@ namespace SDZ
 		std::fstream file("test.txt");
 	}
 
-	const uint knapsack_sizes[] = { 100, 200, 300 };
+	const uint knapsack_sizes[] = { 100, 200, 400 };
 	const uint item_num_bruteforce[] = { 10, 15, 20, 25, 30 };
 	const uint item_num_all[] = { 25, 50, 100, 200, 400 };
 
@@ -75,7 +75,7 @@ namespace SDZ
 
 			for (uint j = 0; j < 5; j++)
 			{
-				std::cout << "\tnumber of items: " << item_num_bruteforce[i] << std::endl;
+				std::cout << "\tnumber of items: " << item_num_bruteforce[j] << std::endl;
 
 				ItemSet set = ItemSet(item_num_bruteforce[j], 30, 30);
 				KnapSack sack = KnapSack(knapsack_sizes[i]);
@@ -123,9 +123,9 @@ namespace SDZ
 
 			for (uint j = 0; j < 5; j++)
 			{
-				std::cout << "\tnumber of items: " << item_num_all[i] << std::endl;
+				std::cout << "\tnumber of items: " << item_num_all[j] << std::endl;
 
-				ItemSet set = ItemSet(item_num_bruteforce[j], 30, 30);
+				ItemSet set = ItemSet(item_num_all[j], 30, 30);
 				KnapSack sack = KnapSack(knapsack_sizes[i]);
 
 				for (uint r = 0; r < repetition; r++)
