@@ -15,6 +15,7 @@ namespace SDZ {
 		KnapSack(uint capacity);
 		KnapSack(uint capacity, ItemSet &set);
 		KnapSack(std::string filepath);
+		KnapSack operator=(const KnapSack &other);
 		~KnapSack();
 
 		//Discrete KnapSack Problem
@@ -26,6 +27,7 @@ namespace SDZ {
 		void Display();
 		void Sort();
 
+		uint GetTotalValue();
 	private:
 
 		ItemSet item_set_;

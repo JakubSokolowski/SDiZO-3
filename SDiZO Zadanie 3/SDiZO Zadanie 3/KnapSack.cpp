@@ -9,11 +9,15 @@ inline uint Max(uint a, uint b)
 }
 
 KnapSack::KnapSack()
-{}
+	: max_value_{0}
+	, capacity_{0}
+{
+}
 
 SDZ::KnapSack::KnapSack(uint capacity)
 {
 	capacity_ = capacity;
+	max_value_ = 0;
 }
 
 
@@ -26,6 +30,14 @@ KnapSack::KnapSack(std::string filepath)
 		throw std::runtime_error("Could not open the file");
 }
 
+KnapSack SDZ::KnapSack::operator=(const KnapSack & other)
+{
+	item_set_ = other.item_set_;
+	capacity_ = other.capacity_;
+	max_value_ = other.max_value_;
+	return *this;
+}
+
 
 KnapSack::~KnapSack()
 {
@@ -34,8 +46,8 @@ KnapSack::~KnapSack()
 
 void SDZ::KnapSack::Display()
 {
-	std::cout << "\nKnapsack has capacity of " << capacity_;
-	std::cout << "\nMax item value " << max_value_;
+	std::cout << "\Plecak ma pojemnosc " << capacity_;
+	std::cout << "\nMaksymalna wartosc przedmiotow " << max_value_;
 	item_set_.DisplayInfo();
 	item_set_.DisplaySet();
 }
@@ -43,6 +55,11 @@ void SDZ::KnapSack::Display()
 void SDZ::KnapSack::Sort()
 {
 	item_set_.Sort();
+}
+
+uint SDZ::KnapSack::GetTotalValue()
+{
+	return item_set_.GetTotalValue();
 }
 
 // Fills the knapsack with items from set using Algorithm
