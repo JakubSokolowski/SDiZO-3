@@ -9,12 +9,11 @@ ItemSet::ItemSet()
 {
 }
 
-ItemSet::ItemSet(const ItemSet & set)
-{
-	item_set_ = set.item_set_;
-	total_value_ = set.total_value_;
-	total_weight_ = set.total_weight_;
-}
+ItemSet::ItemSet(const ItemSet & other)
+	: item_set_{other.item_set_}
+	, total_value_{other.total_value_}
+	, total_weight_{other.total_weight_}
+{}
 
 ItemSet::ItemSet(uint item_num, uint max_item_value, uint max_item_weight)
 {
@@ -112,10 +111,10 @@ void ItemSet::AddItem(uint weight, uint value)
 	total_weight_ += weight;
 }
 
-void SDZ::ItemSet::AddToValue(uint index, uint value)
+void SDZ::ItemSet::AddToWeight(uint index, uint weight)
 {
-	item_set_.at(index).AddValue(value);
-	total_value_ += value;
+	item_set_.at(index).AddWeight(weight);
+	total_weight_ += weight;
 }
 
 void ItemSet::FillRandom(uint item_num, uint max_item_value, uint max_item_weight)
@@ -138,22 +137,22 @@ void ItemSet::FillRandom(uint item_num, uint max_item_value, uint max_item_weigh
 	}
 }
 
-//Increases the total value of items, so that it reaches min_value
-void ItemSet::IncreaseTotalValue(uint min_value)
+//Increases the total weight of items, so that it reaches min_weight
+void ItemSet::IncreaseTotalWeight(uint min_weight)
 {
-	//If the min_value (125% of knapsack capacity) is smaller than total, return
-	if (min_value < total_value_)
+	//If the min_weight (125% of knapsack capacity) is smaller than total, return
+	if (min_weight < total_weight_)
 		return;
 
-	uint missing_value = min_value - total_value_;
-	//Evenly distribute the missing_value in item_set
-	uint value = static_cast<uint>(missing_value / item_set_.size()) + 1;
+	uint missing_weight = min_weight - total_weight_;
+	//Evenly distribute the missing_weight in item_set
+	uint value = static_cast<uint>(missing_weight / item_set_.size()) + 1;
 
 	for (uint i = 0; i < GetSize(); i++)
 	{
-		if (total_value_ > min_value)
+		if (total_weight_ > min_weight)
 			break;
-		AddToValue(i, value);			
+		AddToWeight(i, value);			
 	}
 }
 
@@ -168,15 +167,15 @@ void SDZ::ItemSet::DisplaySet()
 	for (auto item : item_set_)
 	{
 		std::cout << std::fixed 
-		<< "Val: " << item.value_ << "  \tWeight: " << item.weight_ 
+		<< "War: " << item.value_ << "  \tWaga: " << item.weight_ 
 		<< "     \t" << item.value_per_weight_ << std::endl;
 	}	
 }
 
 void SDZ::ItemSet::DisplayInfo()
 {
-	std::cout << "\nItem set contains " << GetSize() << " items with total weight of "
-		<< total_weight_ << " and total value of " << total_value_ << std::endl;
+	std::cout << "\nZestaw przedmiotow zawiera " << GetSize() << " przedmiotow z calkowita waga "
+		<< total_weight_ << " i calkowita wartoscia " << total_value_ << std::endl;
 }
 
 void SDZ::ItemSet::Sort()
@@ -187,7 +186,7 @@ void SDZ::ItemSet::Sort()
 void SDZ::ItemSet::WriteToFile(uint knapsack_capacity,std::string filepath)
 {
 	if (knapsack_capacity > total_weight_)
-		IncreaseTotalValue(static_cast<uint>(knapsack_capacity*1.3));
+		IncreaseTotalWeight(static_cast<uint>(knapsack_capacity*1.3));
 
 	std::ofstream file(filepath);
 
@@ -210,7 +209,7 @@ void SDZ::ItemSet::ReadFromFile(std::string filepath)
 	if (!file)
 		throw std::runtime_error("Could not open the file");
 
-	//Clear the item set
+	//Clear the item other
 	item_set_.clear();
 
 	uint num_items, capacity;

@@ -41,9 +41,9 @@ namespace SDZ {
 		{}
 
 		// Adding to set
-		void AddValue(uint value)
+		void AddWeight(uint weight)
 		{
-			value_ += value;
+			weight_ += weight;
 			value_per_weight_ = double(value_) / double(weight_);
 		}
 
@@ -51,10 +51,14 @@ namespace SDZ {
 		
 		bool operator < (const Item &val) const
 		{
+			if (value_per_weight_ == val.value_per_weight_)
+				return value_ > val.value_;
 			return value_per_weight_ > val.value_per_weight_;
 		}
 		bool operator > (const Item &val) 
 		{
+			if (value_per_weight_ == val.value_per_weight_)
+				return value_ < val.value_;
 			return value_per_weight_ < val.value_per_weight_;
 		}
 	};
@@ -101,10 +105,10 @@ namespace SDZ {
 
 		void AddItem(Item &item);
 		void AddItem(uint weight, uint value);
-		void AddToValue(uint index, uint value);
+		void AddToWeight(uint index, uint value);
 
 		void FillRandom(uint item_num, uint max_item_value = 10, uint max_item_weight = 10);
-		void IncreaseTotalValue(uint min_value);
+		void IncreaseTotalWeight(uint min_weight);
 
 		// Getters
 
@@ -126,6 +130,8 @@ namespace SDZ {
 
 		void WriteToFile(uint knapsack_capacity,std::string filepath);
 		void ReadFromFile(std::string filepath);
+		void Clear() { item_set_.clear(); }
+		void Reserve(uint size) { item_set_.reserve(size); }
 
 		
 
