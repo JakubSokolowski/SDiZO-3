@@ -68,7 +68,7 @@ namespace SDZ
 		double dyn_time = 0.0;
 		double gr_time = 0.0;
 
-		std::cout << "\nTest Start: All algorithms\n ";
+		std::cout << "\nTest Start: All algorithms\n";
 		for (uint i = 0; i < 3; i++)
 		{
 			std::cout << "Start for capacity: " << knapsack_sizes[i] << std::endl;
@@ -77,11 +77,14 @@ namespace SDZ
 			{
 				std::cout << "\tnumber of items: " << item_num_bruteforce[j] << std::endl;
 
-				ItemSet set = ItemSet(item_num_bruteforce[j], 30, 30);
+				
 				KnapSack sack = KnapSack(knapsack_sizes[i]);
 
 				for (uint r = 0; r < repetition; r++)
 				{
+					ItemSet set = ItemSet(item_num_bruteforce[j], 50, 50);
+					set.IncreaseTotalWeight(knapsack_sizes[i]);
+
 					StartCounter();
 					sack.FillKnapsack(set, KnapSack::BRUTEFORCE);
 					bf_time += GetCounter();
@@ -115,8 +118,12 @@ namespace SDZ
 
 		double dyn_time = 0.0;
 		double gr_time = 0.0;
+		uint sum_dynamic = 0;
+		uint sum_greedy = 0;
 
-		std::cout << "\nTest Start: All algorithms\n ";
+		uint dyn_total = 0;
+		uint greedy_total = 0;
+		std::cout << "\nTest Start: Dynamic & Greedy\n ";
 		for (uint i = 0; i < 3; i++)
 		{
 			std::cout << "Start for capacity: " << knapsack_sizes[i] << std::endl;
@@ -124,31 +131,66 @@ namespace SDZ
 			for (uint j = 0; j < 5; j++)
 			{
 				std::cout << "\tnumber of items: " << item_num_all[j] << std::endl;
-
-				ItemSet set = ItemSet(item_num_all[j], 30, 30);
+				
 				KnapSack sack = KnapSack(knapsack_sizes[i]);
 
 				for (uint r = 0; r < repetition; r++)
 				{
+					ItemSet set = ItemSet(item_num_all[j], 20, 20);
+					set.IncreaseTotalWeight(knapsack_sizes[i]);
+					
+					
 					StartCounter();
 					sack.FillKnapsack(set, KnapSack::DYNAMIC);
 					dyn_time += GetCounter();
+					sum_dynamic += sack.GetTotalValue();
 
 					StartCounter();
 					sack.FillKnapsack(set, KnapSack::GREEDY);
 					gr_time += GetCounter();
+					sum_greedy += sack.GetTotalValue();
 				}
 
 				file << std::fixed << dyn_time / repetition << "\t";
 				file << std::fixed << gr_time / repetition << "\n";
 				dyn_time = gr_time = 0.0;
 
+				//std::cout << sum_dynamic << " " << sum_greedy << std::endl;
+				//std::cout << "Mean value loss: " << (sum_dynamic - sum_greedy) / repetition << std::endl;
+				greedy_total += sum_greedy;
+				dyn_total += sum_dynamic;
+				sum_dynamic = sum_greedy = 0;
 			}
+		
 		}
+		std::cout << "Mean difference: " << ((dyn_total - greedy_total) / 15 ) / repetition << std::endl;
 		std::cout << "Finished all tests! Results in file " << filename.c_str() << std::endl;
 		file.close();
 
 	}
+
+	void ReadProblemFromFile(std::string filepath, ItemSet &set, KnapSack &sack)
+	{
+		std::fstream file;
+		file.open(filepath, std::ios_base::in);
+
+		if (!file)
+			throw std::runtime_error("Could not open the file");
+
+		//Clear the item other
+		set.Clear();
+		uint num_items, capacity;
+		file >> capacity >> num_items;
+
+		set.Reserve(num_items);
+		sack = KnapSack(capacity);
+
+		uint weight, value;
+
+		while (file >> weight >> value)
+			set.AddItem(weight, value);
+
+		file.close();
+	}
 }
 
-// TIMING
