@@ -28,6 +28,7 @@ namespace SDZ {
 
 		uint GetTotalValue();
 		void SetCapacity(uint new_capacity);
+
 	private:
 
 		ItemSet item_set_;

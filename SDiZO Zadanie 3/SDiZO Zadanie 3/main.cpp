@@ -30,6 +30,7 @@ void KnapSackTest()
 	sack.FillKnapsack(set2, KnapSack::GREEDY);
 	sack.Display();
 }
+
 void Menu()
 {
 	
@@ -70,7 +71,6 @@ void Menu()
 				std::cout << "\nPodaj nazwe pliku: " << std::flush;
 				std::string filename;				
 				std::getline(std::cin, filename);
-				std::cout << "lmao";
 				if (FileExists(filename))
 				{
 					ReadProblemFromFile(filename, set, sack);
@@ -153,14 +153,16 @@ void Menu()
 	} while (option != '0');
 
 }
+
 void Sample()
 {
-	ItemSet set = ItemSet(30, 20, 20);
+	ItemSet set = ItemSet(15, 20, 20);
 	set.WriteToFile(200, "TestSample.txt");
 }
+
 int main()
-{
-	
+{	
+	Sample();
 	Menu();	
 	getchar();
     return 0;
