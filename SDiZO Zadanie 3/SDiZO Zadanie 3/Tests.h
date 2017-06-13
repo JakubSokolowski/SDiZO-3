@@ -57,6 +57,7 @@ namespace SDZ
 
 	const uint knapsack_sizes[] = { 100, 200, 400 };
 	const uint item_num_bruteforce[] = { 10, 15, 20, 25, 30 };
+	const uint item_values[] = { 5, 10, 15, 20, 25 };
 	const uint item_num_all[] = { 25, 50, 100, 200, 400 };
 
 	void BruteforceTests(std::string filename, uint repetition)
@@ -82,7 +83,7 @@ namespace SDZ
 
 				for (uint r = 0; r < repetition; r++)
 				{
-					ItemSet set = ItemSet(item_num_bruteforce[j], 50, 50);
+					ItemSet set = ItemSet(item_num_bruteforce[j], 20, 20);
 					set.IncreaseTotalWeight(knapsack_sizes[i]);
 
 					StartCounter();
@@ -110,6 +111,7 @@ namespace SDZ
 		file.close();
 		
 	}
+
 	void DynamicGreedyTests(std::string filename, uint repetition)
 	{
 		std::ofstream file(filename);
@@ -169,6 +171,38 @@ namespace SDZ
 
 	}
 
+	void MeanItemValueLoss(std::string filename, uint repetition)
+	{
+		std::ofstream file(filename);
+
+
+		uint sum_dynamic = 0;
+		uint sum_greedy = 0;
+
+		uint dyn_total = 0;
+		uint greedy_total = 0;
+		std::cout << "\nTest Start: Dynamic & Greedy\n ";
+		KnapSack sack = KnapSack(600);
+		for (uint i = 0; i < 5; i++)
+		{
+		
+			for (uint j = 0; j < repetition; j++)
+			{
+				ItemSet set = ItemSet(200, item_values[i], item_values[i]);
+				sack.FillKnapsack(set, KnapSack::DYNAMIC);
+				sum_dynamic += sack.GetTotalValue();
+
+				sack.FillKnapsack(set, KnapSack::GREEDY);
+				sum_greedy += sack.GetTotalValue();
+
+			}
+			file << (sum_dynamic - sum_greedy) / repetition << std::endl;
+			sum_dynamic = sum_greedy = 0;
+		}
+		std::cout << "Finished all tests! Results in file " << filename.c_str() << std::endl;
+		file.close();
+	}
+
 	void ReadProblemFromFile(std::string filepath, ItemSet &set, KnapSack &sack)
 	{
 		std::fstream file;
@@ -183,7 +217,7 @@ namespace SDZ
 		file >> capacity >> num_items;
 
 		set.Reserve(num_items);
-		sack = KnapSack(capacity);
+		sack.SetCapacity(capacity);
 
 		uint weight, value;
 
