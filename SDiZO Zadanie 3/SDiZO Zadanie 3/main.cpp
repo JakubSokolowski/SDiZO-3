@@ -2,12 +2,11 @@
 #include "stdafx.h"
 #include <iostream>
 #include <string>
-#include <sstream>
-#include <algorithm>
 #include "ItemSet.h"
 #include "KnapSack.h"
 #include "Vector.h"
 #include "Tests.h"
+#include <conio.h>
 
 using namespace SDZ;
 
@@ -18,11 +17,6 @@ void KnapSackTest()
 	set2.AddItem(10, 60);
 	set2.AddItem(20, 100);
 	set2.AddItem(30, 120);
-	//set2.AddItem(5, 7);
-	//set2.AddItem(12, 2);
-	//set2.AddItem(2, 10);
-	set2.FillRandom(30, 50, 50);
-	//set2.Sort();
 	set2.DisplayInfo();
 	set2.DisplaySet();
 	KnapSack sack = KnapSack(200);
@@ -36,8 +30,7 @@ void KnapSackTest()
 	sack.FillKnapsack(set2, KnapSack::GREEDY);
 	sack.Display();
 }
-
-void menu()
+void Menu()
 {
 	
 	
@@ -56,14 +49,14 @@ void menu()
 		std::cout << "T. Testy" << std::endl;
 		std::cout << "0. Koniec" << std::endl;
 		
-		std::cin >> option;
+		option = _getche();
 		switch (option)
 		{
 			uint num_items, capacity;
 			// Random Item Set
 			case '1':
 			{
-				std::cout << "Podaj ilosc elementow: ";
+				std::cout << "\nPodaj ilosc elementow: ";
 				std::cin >> num_items;
 				std::cout << "Poda pojemnosc plecaka: ";
 				std::cin >> capacity;
@@ -74,10 +67,14 @@ void menu()
 			// File input
 			case '2':
 			{
-				std::string filename;
-				std::cout << "Podaj nazwe pliku: ";
+				std::cout << "\nPodaj nazwe pliku: " << std::flush;
+				std::string filename;				
 				std::getline(std::cin, filename);
-				ReadProblemFromFile(filename, set, sack);
+				std::cout << "lmao";
+				if (FileExists(filename))
+				{
+					ReadProblemFromFile(filename, set, sack);
+				}			
 
 			}break;
 			// Display itemset
@@ -100,12 +97,12 @@ void menu()
 				do
 				{
 					
-					std::cout << "1. Przeglad zupelny" << std::endl;
+					std::cout << "\n1. Przeglad zupelny" << std::endl;
 					std::cout << "2. Algorytm dynamiczny" << std::endl;
 					std::cout << "3. Algorytm zachlanny" << std::endl;
 					std::cout << "0. Koniec" << std::endl;
 
-					std::cin >> option2;
+					option2 = _getche();
 					switch (option2)
 					{
 						
@@ -139,7 +136,7 @@ void menu()
 
 			case 'T':
 			{
-				std::cout << "Wybrano Opcje testy, moze zajac to bardzo dlugo, nacisnij y aby potwierdzic" << std::endl;
+				std::cout << "\nWybrano Opcje testy, moze zajac to bardzo dlugo, nacisnij y aby potwierdzic" << std::endl;
 				char opt;
 				std::cin >> opt;
 				if (opt == 'y')
@@ -156,14 +153,15 @@ void menu()
 	} while (option != '0');
 
 }
+void Sample()
+{
+	ItemSet set = ItemSet(30, 20, 20);
+	set.WriteToFile(200, "TestSample.txt");
+}
 int main()
 {
-	//UpperBoundTest();
-	// KnapSackTest();
-	//TSPTest();
-	menu();
-	//BruteforceTests("brtests1.txt", 10);
-	//DynamicGreedyTests("dyngrtests1.txt", 100);
+	
+	Menu();	
 	getchar();
     return 0;
 }
