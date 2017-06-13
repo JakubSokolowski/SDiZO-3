@@ -18,8 +18,8 @@ SDZ::KnapSack::KnapSack(uint capacity)
 {
 	capacity_ = capacity;
 	max_value_ = 0;
+	item_set_.Clear();
 }
-
 
 KnapSack::KnapSack(std::string filepath)
 {
@@ -46,7 +46,7 @@ KnapSack::~KnapSack()
 
 void SDZ::KnapSack::Display()
 {
-	std::cout << "\Plecak ma pojemnosc " << capacity_;
+	std::cout << "\nPlecak ma pojemnosc " << capacity_;
 	std::cout << "\nMaksymalna wartosc przedmiotow " << max_value_;
 	item_set_.DisplayInfo();
 	item_set_.DisplaySet();
@@ -60,6 +60,13 @@ void SDZ::KnapSack::Sort()
 uint SDZ::KnapSack::GetTotalValue()
 {
 	return item_set_.GetTotalValue();
+}
+
+void SDZ::KnapSack::SetCapacity(uint new_capacity)
+{
+	item_set_.Clear();
+	capacity_ = new_capacity;
+	max_value_ = 0;	
 }
 
 // Fills the knapsack with items from set using Algorithm
@@ -99,7 +106,6 @@ void SDZ::KnapSack::FillKnapsack(ItemSet & set, Algorithm alg)
 			item_set_.AddItem(set.At(it));
 	}
 }
-
 
 uint SDZ::KnapSack::FillBruteForce(ItemSet & set, DTS::Vector<bool> & included)
 {

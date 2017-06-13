@@ -13,7 +13,6 @@ namespace SDZ {
 
 		KnapSack();
 		KnapSack(uint capacity);
-		KnapSack(uint capacity, ItemSet &set);
 		KnapSack(std::string filepath);
 		KnapSack operator=(const KnapSack &other);
 		~KnapSack();
@@ -28,6 +27,7 @@ namespace SDZ {
 		void Sort();
 
 		uint GetTotalValue();
+		void SetCapacity(uint new_capacity);
 	private:
 
 		ItemSet item_set_;
